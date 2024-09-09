@@ -22,23 +22,6 @@ const (
 	diskEncryption = "disk-encryption"
 )
 
-// <entry name="disk-encryption">
-//			<list>
-//				<entry>
-//					<ProductInfo>
-//						<Prod name="cryptsetup" version="2.3.3" vendor="GitLab Inc.">
-//						</Prod>
-//						<drives>
-//							<entry>
-//								<drive-name>/</drive-name>
-//								<enc-state>encrypted</enc-state>
-//							</entry>
-//						</drives>
-//					</ProductInfo>
-//				</entry>
-//			</list>
-//		</entry>
-
 type Encryption struct {
 	Name string         `xml:"name,attr"`
 	List EncryptionList `xml:"list"`
