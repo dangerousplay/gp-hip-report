@@ -12,11 +12,6 @@ import (
 )
 
 const (
-	yes = "yes"
-	no  = "no"
-)
-
-const (
 	firewallEntryName = "firewall"
 
 	ufwFirewall      = "ufw"
@@ -187,7 +182,7 @@ func checkUfw() (*FirewallEntry, error) {
 			Version: version,
 			Vendor:  knownFirewallVendors[ufwFirewall],
 		},
-		IsEnabled: boolToString(active),
+		IsEnabled: utils.BoolToString(active),
 	}}
 
 	return entry, nil
@@ -239,7 +234,7 @@ func checkNft() (*FirewallEntry, error) {
 		return len(el.Rule.Expr) > 0
 	})
 
-	entry.ProductInfo.IsEnabled = boolToString(active)
+	entry.ProductInfo.IsEnabled = utils.BoolToString(active)
 
 	return entry, nil
 }
@@ -263,7 +258,7 @@ func checkIptables() (*FirewallEntry, error) {
 			Version: version,
 			Vendor:  knownFirewallVendors[iptablesFirewall],
 		},
-		IsEnabled: boolToString(false),
+		IsEnabled: utils.BoolToString(false),
 	}}
 
 	return entry, nil
@@ -297,14 +292,6 @@ func parseUfwVersion(output string) string {
 	}
 
 	return parts[1]
-}
-
-func boolToString(value bool) string {
-	if value {
-		return yes
-	} else {
-		return no
-	}
 }
 
 func isUfwEnabled() (bool, error) {
