@@ -3,6 +3,7 @@ module gp-hip-report
 go 1.23.1
 
 require (
+	github.com/alecthomas/kong v0.9.0
 	github.com/cockroachdb/errors v1.11.3
 	github.com/coreos/go-systemd/v22 v22.5.0
 	github.com/dell/csi-baremetal v1.7.0

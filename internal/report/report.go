@@ -1,8 +1,10 @@
 package report
 
 import (
+	"context"
 	"encoding/xml"
 	"github.com/hashicorp/go-hclog"
+	"gp-hip-report/internal/report/antithreat"
 	"gp-hip-report/internal/report/disk"
 	"gp-hip-report/internal/report/network"
 	"net/url"
@@ -35,7 +37,7 @@ type HIPReport struct {
 	IpV6Address string `xml:"ipv6-address"`
 }
 
-func GenerateReport(cookie, md5, clientIpv4, clientIpv6 string) (HIPReport, error) {
+func GenerateReport(ctx context.Context, cookie, md5, clientIpv4, clientIpv6 string) (HIPReport, error) {
 	datetime := time.Now().Format(timeFormat)
 
 	params, err := url.ParseQuery(cookie)
@@ -66,6 +68,12 @@ func GenerateReport(cookie, md5, clientIpv4, clientIpv6 string) (HIPReport, erro
 		hclog.Default().Error("Failed to get firewall information", err)
 	}
 
+	antivirus, err := antithreat.GetAntiMalware(ctx)
+
+	if err != nil {
+		hclog.Default().Error("Failed to get antivirus information", err)
+	}
+
 	return HIPReport{
 		GenerateTime:     datetime,
 		HIPReportVersion: hipReportVersion,
@@ -78,6 +86,7 @@ func GenerateReport(cookie, md5, clientIpv4, clientIpv6 string) (HIPReport, erro
 				hostInfo,
 				encryption,
 				firewall,
+				antivirus,
 			},
 		},
 	}, err
