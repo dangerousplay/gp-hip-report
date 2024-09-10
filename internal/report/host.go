@@ -26,19 +26,26 @@ type HostEntry struct {
 }
 
 func GetHostInformation(computer, domain string) (HostEntry, error) {
-	var si sysinfo.SysInfo
-	si.GetSysInfo()
+	var osName string
+	var vendor string
 
-	osName := strings.Title(runtime.GOOS)
+	switch runtime.GOOS {
+	case "linux":
+		var si sysinfo.SysInfo
+		si.GetSysInfo()
+
+		vendor = strings.Title(runtime.GOOS)
+		osName = vendor + " " + si.OS.Name
+	}
 
 	networkInfo, err := network.GetNetworkInterfaces()
 
 	return HostEntry{
 		Name:          hostInfoEntryName,
 		ClientVersion: defaultClientVersion,
-		OS:            si.OS.Name,
-		OSVendor:      osName,
-		Domain:        domain,
+		OS:            osName,
+		OSVendor:      vendor,
+		Domain:        domain + ".internal",
 		HostName:      computer,
 		HostID:        defaultHostId,
 
