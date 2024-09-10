@@ -126,7 +126,7 @@ func GetFirewallInfo() (*Firewall, error) {
 	ufw, err := checkUfw()
 
 	if err != nil {
-		logger.Warn("Failed to check if ufw is active: %s", err)
+		logger.Warn("Failed to check if ufw is active", err)
 		errs = errors.CombineErrors(errs, err)
 	}
 
@@ -137,7 +137,7 @@ func GetFirewallInfo() (*Firewall, error) {
 	nft, err := checkNft()
 
 	if err != nil {
-		logger.Warn("Failed to check if nftables is active: %s", err)
+		logger.Warn("Failed to check if nftables is active", err)
 		errs = errors.CombineErrors(errs, err)
 	}
 
@@ -148,7 +148,7 @@ func GetFirewallInfo() (*Firewall, error) {
 	iptables, err := checkIptables()
 
 	if err != nil {
-		logger.Warn("Failed to check if iptables is active: %s", err)
+		logger.Warn("Failed to check if iptables is active", err)
 		errs = errors.CombineErrors(errs, err)
 	}
 
@@ -162,7 +162,7 @@ func GetFirewallInfo() (*Firewall, error) {
 func checkUfw() (*FirewallEntry, error) {
 	ufwInstalled, ufwVersion, err := utils.CheckExists("ufw", []string{"ufw", "--version"})
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	if !ufwInstalled {
@@ -173,7 +173,7 @@ func checkUfw() (*FirewallEntry, error) {
 	active, err := isUfwEnabled()
 
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	entry := &FirewallEntry{ProductInfo: FirewallProductInfo{
@@ -191,7 +191,7 @@ func checkUfw() (*FirewallEntry, error) {
 func checkNft() (*FirewallEntry, error) {
 	installed, versionOutput, err := utils.CheckExists("nft", []string{"nft", "--version"})
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	if !installed {
@@ -214,14 +214,14 @@ func checkNft() (*FirewallEntry, error) {
 	output, err := cmd.Output()
 
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	var rules nftables
 
 	err = json.Unmarshal(output, &rules)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	active := true
@@ -243,7 +243,7 @@ func checkIptables() (*FirewallEntry, error) {
 	ipTablesInstalled, ipTablesVersion, err := utils.CheckExists("iptables", []string{"iptables", "--version"})
 
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	if !ipTablesInstalled {

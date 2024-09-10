@@ -57,13 +57,13 @@ func GenerateReport(cookie, md5, clientIpv4, clientIpv6 string) (HIPReport, erro
 	hostInfo, err := GetHostInformation(computer, domain)
 
 	if err != nil {
-		hclog.Default().Error("Failed to get host information: %s", err)
+		hclog.Default().Error("Failed to get host information", err)
 	}
 
 	firewall, err := network.GetFirewallInfo()
 
 	if err != nil {
-		hclog.Default().Error("Failed to get firewall information: %s", err)
+		hclog.Default().Error("Failed to get firewall information", err)
 	}
 
 	return HIPReport{

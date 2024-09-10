@@ -71,7 +71,7 @@ func GetDiskEncryptionInfo() (*Encryption, error) {
 	_, cryptVersion, err := utils.CheckExists("cryptsetup", []string{"cryptsetup", "--version"})
 
 	if err != nil {
-		logger.Warn("Failed to check if cryptsetup is installed: %s", err)
+		logger.Warn("Failed to check if cryptsetup is installed", err)
 	}
 
 	cryptSetupProd := &EncryptionProductInfoProd{
