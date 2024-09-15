@@ -1,14 +1,11 @@
 package utils
 
-const (
-	Yes = "yes"
-	No  = "no"
-)
+import "gp-hip-report/internal/constants"
 
 func BoolToString(value bool) string {
 	if value {
-		return Yes
+		return constants.Yes
 	} else {
-		return No
+		return constants.No
 	}
 }

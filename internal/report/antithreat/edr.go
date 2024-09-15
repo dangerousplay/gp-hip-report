@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/cockroachdb/errors"
 	"github.com/coreos/go-systemd/v22/dbus"
+	"gp-hip-report/internal/constants"
 	"gp-hip-report/internal/utils"
 	"strings"
 	"time"
@@ -38,7 +39,7 @@ const (
 var knownEdrs = map[string]Product{
 	edrFalcon: {
 		Name:   "CrowdStrike Falcon",
-		Vendor: "CrowdStrike, Inc.",
+		Vendor: constants.VendorCrowdStrike,
 	},
 }
 
@@ -138,8 +139,8 @@ func checkFalconSensor(ctx context.Context) (*ProductInfo, error) {
 			DateYear: fmt.Sprint(now.Year()),
 			DateMon:  fmt.Sprint(int(now.Month())),
 		},
-		RealTimeProtection: utils.Yes,
-		LastFullScanTime:   utils.NotApplicable,
+		RealTimeProtection: constants.Yes,
+		LastFullScanTime:   constants.NotApplicable,
 	}
 
 	return product, nil
