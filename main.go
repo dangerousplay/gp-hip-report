@@ -33,7 +33,7 @@ func (c *CLI) Run(kctx *kong.Context) error {
 
 	hipReport, err := report.GenerateReport(ctx, c.Cookie, c.MD5, c.ClientIpv4, c.ClientIpv6)
 
-	xmlReport, err := xml.MarshalIndent(hipReport, "", " ")
+	xmlReport, err := xml.MarshalIndent(hipReport, "", "\t")
 
 	if err != nil {
 		return err
