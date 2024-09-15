@@ -1,0 +1,77 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=1
+    goos:
+      - linux
+    goarch:
+      - amd64
+
+archives:
+  - format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+
+    format_overrides:
+      - goos: windows
+        format: zip
+
+nfpms:
+  - id: gp-hip-report
+    package_name: gp-hip-report
+    file_name_template: "{{ .ConventionalFileName }}"
+
+    builds:
+      - gp-hip-report
+
+    vendor: Drum Roll Inc.
+    homepage: https://github.com/dangerousplay/gp-hip-report
+    maintainer: Dangerousplay <dangerousplay715@gmail.com>
+    description: |-
+      Global Protect HIP report generator
+
+    license: Apache 2.0
+
+    formats:
+      - deb
+
+    umask: 0o002
+    provides:
+      - gp-hip-report
+
+    bindir: /usr/bin
+
+    prerelease: beta1
+    version_metadata: git
+    release: 1
+
+    section: default
+    priority: extra
+    meta: false
+
+    scripts:
+      postinstall: "scripts/postinstall.sh"
+
+    overrides:
+      deb:
+        dependencies:
+          - libcryptsetup-dev
+
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
