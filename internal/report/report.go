@@ -74,6 +74,14 @@ func GenerateReport(ctx context.Context, cookie, md5, clientIpv4, clientIpv6 str
 		hclog.Default().Error("Failed to get antivirus information", err)
 	}
 
+	dlpInfo := dlp.GetDlpInfo()
+
+	patchManagement, err := patch.GetPatchManagement()
+
+	if err != nil {
+		hclog.Default().Error("Failed to get antivirus information", err)
+	}
+
 	return HIPReport{
 		GenerateTime:     datetime,
 		HIPReportVersion: hipReportVersion,
@@ -86,6 +94,7 @@ func GenerateReport(ctx context.Context, cookie, md5, clientIpv4, clientIpv6 str
 				hostInfo,
 				encryption,
 				firewall,
+				patchManagement,
 				antivirus,
 			},
 		},
