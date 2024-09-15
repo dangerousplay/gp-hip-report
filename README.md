@@ -112,3 +112,10 @@ Reports the interfaces Mac Address, assigned IPv4/IPv6 addresses and the status 
 | Falcon Sensor | Linux |
 
 
+### Patch management
+
+| OS    | Name | Missing patch report? |
+|-------|------|-----------------------|
+| Linux | apt  | No                    |
+
+
