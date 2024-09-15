@@ -11,6 +11,7 @@ const (
 	defaultClientVersion = "5.1.5-8"
 	defaultHostId        = "deadbeef-dead-beef-dead-beefdeadbeef"
 	hostInfoEntryName    = "host-info"
+	internalDomain       = ".internal"
 )
 
 type HostEntry struct {
@@ -45,7 +46,7 @@ func GetHostInformation(computer, domain string) (HostEntry, error) {
 		ClientVersion: defaultClientVersion,
 		OS:            osName,
 		OSVendor:      vendor,
-		Domain:        domain + ".internal",
+		Domain:        domain + internalDomain,
 		HostName:      computer,
 		HostID:        defaultHostId,
 
