@@ -7,6 +7,7 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/hashicorp/go-hclog"
 	"gp-hip-report/internal/report"
+	"syscall"
 )
 
 type CLI struct {
@@ -17,8 +18,18 @@ type CLI struct {
 	ClientOs   string `help:"Client OS (ignored)" name:"client-os"`
 }
 
+func setuidRoot() {
+	err := syscall.Setuid(0)
+
+	if err != nil {
+		hclog.Default().Warn("failed to setuid", err)
+	}
+}
+
 func (c *CLI) Run(kctx *kong.Context) error {
 	ctx := context.Background()
+
+	setuidRoot()
 
 	hipReport, err := report.GenerateReport(ctx, c.Cookie, c.MD5, c.ClientIpv4, c.ClientIpv6)
 
