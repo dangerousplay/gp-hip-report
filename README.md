@@ -17,6 +17,7 @@
     * [Network](#network)
       * [Firewall](#firewall)
     * [Anti Malware](#anti-malware)
+    * [Patch management](#patch-management)
 <!-- TOC -->
 
 ## How to use
@@ -71,7 +72,7 @@ dpkg -i gp-hip-report_<version>_<arch>.deb
 
 Download the precompiled binary and add the `setuid` flag.
 ```shell
-$ sudo wget https://github.com/dangerousplay/gp-hip-report/releases/download/<version>/gp-hip-report_<version>_linux_<arch> -O /usr/bin/gp-hip-report
+$ sudo wget https://github.com/dangerousplay/gp-hip-report/releases/download/<version>/gp-hip-report_<version>_$(uname)_$(uname -m) -O /usr/bin/gp-hip-report
 $ sudo chmod u+s /usr/bin/gp-hip-report
 ```
 
