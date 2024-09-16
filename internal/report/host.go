@@ -1,6 +1,7 @@
 package report
 
 import (
+	"github.com/cockroachdb/errors"
 	"github.com/zcalusic/sysinfo"
 	"gp-hip-report/internal/report/network"
 	"runtime"
@@ -9,7 +10,6 @@ import (
 
 const (
 	defaultClientVersion = "5.1.5-8"
-	defaultHostId        = "deadbeef-dead-beef-dead-beefdeadbeef"
 	hostInfoEntryName    = "host-info"
 	internalDomain       = ".internal"
 )
@@ -26,7 +26,7 @@ type HostEntry struct {
 	Network *network.Interfaces `xml:"network-interface"`
 }
 
-func GetHostInformation(computer, domain string) (HostEntry, error) {
+func GetHostInformation(computer, domain, hostId string) (HostEntry, error) {
 	var osName string
 	var vendor string
 
@@ -39,7 +39,11 @@ func GetHostInformation(computer, domain string) (HostEntry, error) {
 		osName = vendor + " " + si.OS.Name
 	}
 
+	var errs error
+
 	networkInfo, err := network.GetNetworkInterfaces()
+
+	errs = errors.CombineErrors(errs, err)
 
 	return HostEntry{
 		Name:          hostInfoEntryName,
@@ -48,8 +52,8 @@ func GetHostInformation(computer, domain string) (HostEntry, error) {
 		OSVendor:      vendor,
 		Domain:        domain + internalDomain,
 		HostName:      computer,
-		HostID:        defaultHostId,
+		HostID:        hostId,
 
 		Network: networkInfo,
-	}, err
+	}, errs
 }

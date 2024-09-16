@@ -10,6 +10,7 @@ import (
 	"gp-hip-report/internal/report/network"
 	"gp-hip-report/internal/report/patch"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -66,7 +67,15 @@ func GenerateReport(ctx context.Context, cookie, md5, clientIpv4, clientIpv6 str
 
 	diskBackup := disk.GetBackupInfo()
 
-	hostInfo, err := GetHostInformation(computer, domain)
+	hostId, err := GetHostID()
+
+	if err != nil {
+		hclog.Default().Warn("failed to get host id", err)
+	}
+
+	hostId = strings.TrimSpace(hostId)
+
+	hostInfo, err := GetHostInformation(computer, domain, hostId)
 
 	if err != nil {
 		hclog.Default().Error("Failed to get host information", err)
@@ -100,7 +109,7 @@ func GenerateReport(ctx context.Context, cookie, md5, clientIpv4, clientIpv6 str
 		Username:         user,
 		Domain:           domain,
 		HostName:         computer,
-		HostID:           defaultHostId,
+		HostID:           hostId,
 		IpAddress:        clientIpv4,
 		IpV6Address:      clientIpv6,
 		Categories: Categories{
