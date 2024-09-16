@@ -18,10 +18,11 @@ archives:
     format: binary
     name_template: >-
       {{ .Binary }}_{{ .Version }}_
-      {{- .Os }}_{{ .Arch }}
-      {{- with .Arm }}v{{ . }}{{ end }}
-      {{- with .Mips }}_{{ . }}{{ end }}
-      {{- if not (eq .Amd64 "v1") }}{{ .Amd64 }}{{ end }}
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
 
   - id: tar
     format: tar.gz
