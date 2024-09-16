@@ -1,8 +1,11 @@
 package disk
 
 import (
+	"github.com/cockroachdb/errors"
+	"github.com/dell/csi-baremetal/pkg/base/linuxutils/lsblk"
 	"github.com/hashicorp/go-hclog"
 	"gp-hip-report/internal/utils"
+	"io/fs"
 	"os"
 	"path"
 	"strings"
@@ -80,56 +83,83 @@ func GetDiskEncryptionInfo() (*Encryption, error) {
 		Vendor:  cryptsetupVendor,
 	}
 
-	encryptedDrives := EncryptionEntry{
+	encryptedDrives := &EncryptionEntry{
 		ProductInfo: EncryptionProductInfo{
 			Product: cryptSetupProd,
 			Drives:  EncryptionDrives{},
 		},
 	}
 
-	unencryptedDrives := EncryptionEntry{
+	unencryptedDrives := &EncryptionEntry{
 		ProductInfo: EncryptionProductInfo{
 			Drives: EncryptionDrives{},
 		},
 	}
 
+	var errs error
 	for _, disk := range disks {
 		for _, child := range disk.Children {
-			diskName := path.Base(child.Name)
-			encrypted := IsEncrypted(diskName)
-			_, err = os.Stat(child.MountPoint)
-
-			if len(child.MountPoint) < 1 {
+			if len(child.MountPoint) < 1 && len(child.Children) < 1 {
 				continue
 			}
 
-			if err != nil {
-				continue
-			}
-
-			encDrive := EncryptionDrive{
-				MountPoint: child.MountPoint,
-			}
-
-			if encrypted {
-				encDrive.State = StateEncrypted
-				encryptedDrives.ProductInfo.Drives.Entries = append(encryptedDrives.ProductInfo.Drives.Entries, encDrive)
-			} else {
-				encDrive.State = StateUnencrypted
-				unencryptedDrives.ProductInfo.Drives.Entries = append(unencryptedDrives.ProductInfo.Drives.Entries, encDrive)
-			}
+			err = appendDisk(child, encryptedDrives, unencryptedDrives)
+			errs = errors.CombineErrors(errs, err)
 		}
 	}
 
+	if errs != nil {
+		hclog.Default().Warn("failed to check disk encryption", errs)
+	}
+
 	if len(encryptedDrives.ProductInfo.Drives.Entries) > 0 {
-		enc.List.Entries = append(enc.List.Entries, encryptedDrives)
+		enc.List.Entries = append(enc.List.Entries, *encryptedDrives)
 	}
 
 	if len(unencryptedDrives.ProductInfo.Drives.Entries) > 0 {
-		enc.List.Entries = append(enc.List.Entries, unencryptedDrives)
+		enc.List.Entries = append(enc.List.Entries, *unencryptedDrives)
 	}
 
 	return &enc, nil
+}
+
+func appendDisk(disk lsblk.BlockDevice, encryptedDrives *EncryptionEntry, unencryptedDrives *EncryptionEntry) (errs error) {
+	diskName := path.Base(disk.Name)
+	encrypted := IsEncrypted(diskName)
+
+	if len(disk.Children) > 0 {
+		for _, child := range disk.Children {
+			err := appendDisk(child, encryptedDrives, unencryptedDrives)
+			errs = errors.CombineErrors(errs, err)
+		}
+	}
+
+	if len(disk.MountPoint) < 1 {
+		hclog.Default().Debug("no mount point defined for disk", "disk", disk.Name)
+		return
+	}
+
+	_, err := os.Stat(disk.MountPoint)
+	if errors.Is(err, fs.ErrNotExist) {
+		return
+	} else if err != nil {
+		errs = errors.CombineErrors(errs, err)
+		return
+	}
+
+	encDrive := EncryptionDrive{
+		MountPoint: disk.MountPoint,
+	}
+
+	if encrypted {
+		encDrive.State = StateEncrypted
+		encryptedDrives.ProductInfo.Drives.Entries = append(encryptedDrives.ProductInfo.Drives.Entries, encDrive)
+	} else {
+		encDrive.State = StateUnencrypted
+		unencryptedDrives.ProductInfo.Drives.Entries = append(unencryptedDrives.ProductInfo.Drives.Entries, encDrive)
+	}
+
+	return
 }
 
 func parseCryptSetupVersion(output string) string {
