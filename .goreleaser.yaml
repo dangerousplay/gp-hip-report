@@ -46,7 +46,6 @@ nfpms:
     builds:
       - gp-hip-report
 
-    vendor: Drum Roll Inc.
     homepage: https://github.com/dangerousplay/gp-hip-report
     maintainer: Dangerousplay <dangerousplay715@gmail.com>
     description: |-
@@ -90,6 +89,9 @@ changelog:
     - title: "Bug fixes"
       regexp: '^.*?(bug|fix)(\([[:word:]]+\))??!?:.+$'
       order: 1
+    - title: "Merge requests"
+      regexp: '^Merge pull request.+$'
+      order: 2
     - title: Others
       order: 999
 

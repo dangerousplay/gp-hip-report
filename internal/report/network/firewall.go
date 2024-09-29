@@ -302,7 +302,19 @@ func isUfwEnabled() (bool, error) {
 		return false, err
 	}
 
-	active := strings.HasSuffix(string(output), "inactive")
+	lines := strings.Split(string(output), "\n")
+
+	if len(lines) < 1 {
+		return false, nil
+	}
+
+	statusParts := strings.Split(lines[0], ":")
+	if len(statusParts) < 2 {
+		return false, nil
+	}
+
+	status := strings.TrimSpace(statusParts[1])
+	active := strings.EqualFold(status, "active")
 
 	return active, nil
 }
