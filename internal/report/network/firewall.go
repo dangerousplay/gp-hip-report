@@ -126,7 +126,7 @@ func GetFirewallInfo() (*Firewall, error) {
 	ufw, err := checkUfw()
 
 	if err != nil {
-		logger.Warn("Failed to check if ufw is active", err)
+		logger.Warn("Failed to check if ufw is active", "err", err)
 		errs = errors.CombineErrors(errs, err)
 	}
 
@@ -137,7 +137,7 @@ func GetFirewallInfo() (*Firewall, error) {
 	nft, err := checkNft()
 
 	if err != nil {
-		logger.Warn("Failed to check if nftables is active", err)
+		logger.Warn("Failed to check if nftables is active", "err", err)
 		errs = errors.CombineErrors(errs, err)
 	}
 
@@ -148,7 +148,7 @@ func GetFirewallInfo() (*Firewall, error) {
 	iptables, err := checkIptables()
 
 	if err != nil {
-		logger.Warn("Failed to check if iptables is active", err)
+		logger.Warn("Failed to check if iptables is active", "err", err)
 		errs = errors.CombineErrors(errs, err)
 	}
 

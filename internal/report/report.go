@@ -62,7 +62,7 @@ func GenerateReport(ctx context.Context, cookie, md5, clientIpv4, clientIpv6 str
 	encryption, err := disk.GetDiskEncryptionInfo()
 
 	if err != nil {
-		hclog.Default().Error("Failed to get disk encryption", err)
+		hclog.Default().Error("Failed to get disk encryption", "err", err)
 	}
 
 	diskBackup := disk.GetBackupInfo()
@@ -70,7 +70,7 @@ func GenerateReport(ctx context.Context, cookie, md5, clientIpv4, clientIpv6 str
 	hostId, err := GetHostID()
 
 	if err != nil {
-		hclog.Default().Warn("failed to get host id", err)
+		hclog.Default().Warn("failed to get host id", "err", err)
 	}
 
 	hostId = strings.TrimSpace(hostId)
@@ -78,19 +78,19 @@ func GenerateReport(ctx context.Context, cookie, md5, clientIpv4, clientIpv6 str
 	hostInfo, err := GetHostInformation(computer, domain, hostId)
 
 	if err != nil {
-		hclog.Default().Error("Failed to get host information", err)
+		hclog.Default().Error("Failed to get host information", "err", err)
 	}
 
 	firewall, err := network.GetFirewallInfo()
 
 	if err != nil {
-		hclog.Default().Error("Failed to get firewall information", err)
+		hclog.Default().Error("Failed to get firewall information", "err", err)
 	}
 
 	antivirus, err := antithreat.GetAntiMalware(ctx)
 
 	if err != nil {
-		hclog.Default().Error("Failed to get antivirus information", err)
+		hclog.Default().Error("Failed to get antivirus information", "err", err)
 	}
 
 	dlpInfo := dlp.GetDlpInfo()
@@ -98,7 +98,7 @@ func GenerateReport(ctx context.Context, cookie, md5, clientIpv4, clientIpv6 str
 	patchManagement, err := patch.GetPatchManagement()
 
 	if err != nil {
-		hclog.Default().Error("Failed to get antivirus information", err)
+		hclog.Default().Error("Failed to get antivirus information", "err", err)
 	}
 
 	return HIPReport{
