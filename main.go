@@ -22,7 +22,7 @@ func setuidRoot() {
 	err := syscall.Setuid(0)
 
 	if err != nil {
-		hclog.Default().Warn("failed to setuid", err)
+		hclog.Default().Warn("failed to setuid", "err", err)
 	}
 }
 
